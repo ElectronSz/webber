@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Welcome to Tornado Web Server</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      /* Optional: Custom font if not using default Tailwind font stack */
+      body {
+        font-family: "Inter", sans-serif;
+      }
+      /* Custom scrollbar for pre tags */
+      pre {
+        overflow-x: auto;
+        scrollbar-width: thin;
+        scrollbar-color: #a0aec0 #edf2f7; /* thumb and track color */
+      }
+      pre::-webkit-scrollbar {
+        height: 8px;
+      }
+      pre::-webkit-scrollbar-track {
+        background: #edf2f7;
+        border-radius: 10px;
+      }
+      pre::-webkit-scrollbar-thumb {
+        background-color: #a0aec0;
+        border-radius: 10px;
+        border: 2px solid #edf2f7;
+      }
+    </style>
+  </head>
+  <body class="min-h-screen bg-gray-100 flex items-center justify-center p-4">
+    <div class="bg-white p-8 rounded-lg shadow-xl max-w-4xl w-full text-center">
+     <img src="https://placehold.co/100x100/007bff/ffffff?text=Tornado" alt="Tornado Logo" class="mx-auto mb-6 rounded-full shadow-md" />
+      <h1 class="text-4xl font-extrabold text-blue-700 mb-4">
+        Welcome to Tornado Web Server!
+      </h1>
+      <p class="text-lg text-gray-700 mb-6">
+        This is the default welcome page for your Go-powered Tornado web server.
+      </p>
+
+      <div class="mt-8 pt-6 border-t border-gray-200">
+        <h2 class="text-2xl font-bold text-gray-800 mb-4">Server Features</h2>
+        <ul
+          class="list-disc list-inside mx-auto max-w-xl text-left text-gray-600 space-y-2"
+        >
+          <li>
+            <strong class="text-blue-600">Logging Middleware:</strong> Every
+            request is logged, showing method, URI, remote address, and
+            completion time.
+          </li>
+          <li>
+            <strong class="text-blue-600">Rate Limiting:</strong> Protects
+            against abuse by limiting requests per client IP. Configurable via
+            `RateLimitRPS` and `RateLimitBurst`.
+          </li>
+          <li>
+            <strong class="text-blue-600">Gzip Compression:</strong>
+            Automatically compresses responses for supported clients, reducing
+            bandwidth usage and improving load times.
+          </li>
+          <li>
+            <strong class="text-blue-600">URL Rewriting:</strong> Demonstrates
+            how to redirect or rewrite URLs (e.g., `/old` to `/new`). Try
+            <a
+              href="/old/example"
+              class="text-blue-500 hover:text-blue-700 font-medium underline"
+              >/old/example</a
+            >.
+          </li>
+          <li>
+            <strong class="text-blue-600"
+              >Reverse Proxy & Load Balancing:</strong
+            >
+            Distributes incoming requests across multiple backend servers using
+            a round-robin strategy. See
+            <a
+              href="/proxy"
+              class="text-blue-500 hover:text-blue-700 font-medium underline"
+              >/proxy</a
+            >.
+          </li>
+          <li>
+            <strong class="text-blue-600">WebSocket Support:</strong> Provides a
+            dedicated endpoint for real-time, bidirectional communication.
+            Access it at
+            <a
+              href="/ws"
+              class="text-blue-500 hover:text-blue-700 font-medium underline"
+              >/ws</a
+            >.
+          </li>
+          <li>
+            <strong class="text-blue-600"
+              >Static File Serving with Caching:</strong
+            >
+            Efficiently serves static assets from the configured directory
+            (`/static/`) with in-memory caching based on `CacheTTLSeconds`.
+          </li>
+          <li>
+            <strong class="text-blue-600">HTTP/2 and TLS:</strong> Secure and
+            high-performance communication enabled by default.
+          </li>
+        </ul>
+      </div>
+
+      <div class="mt-8 pt-6 border-t border-gray-200">
+        <h2 class="text-2xl font-bold text-gray-800 mb-4">Configuration</h2>
+        <p class="text-gray-700 mb-4">
+          Tornado Web Server is configured via a
+          <code class="bg-gray-200 px-1 py-0.5 rounded text-sm"
+            >config.json</code
+          >
+          file in the same directory as the executable.
+        </p>
+        <pre
+          class="bg-gray-800 text-white p-4 rounded-lg text-left text-sm overflow-x-auto"
+        ><code>{
+  "port": "443",           // Port for the server to listen on (e.g., "80" for HTTP, "443" for HTTPS)
+  "static_dir": "./static",   // Directory to serve static files from (e.g., "index.html")
+  "proxy_targets": [         // List of backend URLs for the reverse proxy
+    "http://localhost:8081",
+    "http://localhost:8082"
+  ],
+  "rate_limit_rps": 10.0,    // Requests per second allowed per client IP
+  "rate_limit_burst": 20,    // Burst capacity for the rate limiter
+  "cache_ttl_seconds": 300   // Time-to-live for static file cache entries in seconds
+}</code></pre>
+      </div>
+      <p class="text-sm text-gray-500 mt-8">Built with ❤️ by ElectronSz.</p>
+    </div>
+  </body>
+</html>
