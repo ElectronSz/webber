@@ -1,6 +1,6 @@
 # Webber Web Server
 
-Webber is a modern, high-performance Go web server inspired by Nginx, with support for static file hosting (optimized for Vue.js and other SPA builds), reverse proxying, WebSocket, rate limiting, gzip compression, in-memory caching, HTTP/2, and TLS.
+Webber is a modern, high-performance Go web server inspired by Nginx, with support for static file hosting (optimized for Vue.js, React, Angular, and other SPA builds), reverse proxying, WebSocket, rate limiting, gzip compression, in-memory caching, HTTP/2, and TLS.
 
 ---
 
@@ -14,7 +14,7 @@ Webber is a modern, high-performance Go web server inspired by Nginx, with suppo
 - **WebSocket Support**: Real-time, bidirectional communication (`/ws` endpoint).
 - **Static File Serving with Caching**: Efficiently serves static assets (SPA-ready), with in-memory caching.
 - **HTTP/2 and TLS**: Secure, high-performance communication by default.
-- **SPA Routing Support**: Unmatched routes serve `index.html` for client-side navigation (Vue.js, React, etc.).
+- **SPA Routing Support**: Unmatched routes serve `index.html` for client-side navigation (Vue.js, React, Angular, etc.).
 
 ---
 
@@ -60,7 +60,9 @@ Edit `/etc/webber/config.json` as needed:
 
 ---
 
-### 3. **Deploy a Vue.js App**
+### 3. **Deploy an SPA (Vue.js, React, Angular)**
+
+#### **Vue.js**
 
 1. Build your Vue.js project:
 
@@ -83,6 +85,54 @@ Edit `/etc/webber/config.json` as needed:
    ```
 
 4. Visit [https://localhost/](https://localhost/) to see your Vue app.
+
+#### **React**
+
+1. Build your React project:
+
+   ```bash
+   npm run build
+   ```
+
+2. Copy the contents of the `build/` folder to `/var/www/webber`:
+
+   ```bash
+   sudo cp -r build/* /var/www/webber/
+   sudo chown -R tornado:tornado /var/www/webber
+   sudo chmod -R 755 /var/www/webber
+   ```
+
+3. Restart Webber:
+
+   ```bash
+   sudo systemctl restart webber
+   ```
+
+4. Visit [https://localhost/](https://localhost/) to see your React app.
+
+#### **Angular**
+
+1. Build your Angular project:
+
+   ```bash
+   ng build --prod
+   ```
+
+2. Copy the contents of the `dist/<project-name>/` folder to `/var/www/webber`:
+
+   ```bash
+   sudo cp -r dist/<project-name>/* /var/www/webber/
+   sudo chown -R tornado:tornado /var/www/webber
+   sudo chmod -R 755 /var/www/webber
+   ```
+
+3. Restart Webber:
+
+   ```bash
+   sudo systemctl restart webber
+   ```
+
+4. Visit [https://localhost/](https://localhost/) to see your Angular app.
 
 ---
 
