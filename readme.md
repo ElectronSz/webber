@@ -74,7 +74,7 @@ Edit `/etc/webber/config.json` as needed:
 
    ```bash
    sudo cp -r dist/* /var/www/webber/
-   sudo chown -R tornado:tornado /var/www/webber
+   sudo chown -R webber:webber /var/www/webber
    sudo chmod -R 755 /var/www/webber
    ```
 
@@ -98,7 +98,7 @@ Edit `/etc/webber/config.json` as needed:
 
    ```bash
    sudo cp -r build/* /var/www/webber/
-   sudo chown -R tornado:tornado /var/www/webber
+   sudo chown -R webber:webber /var/www/webber
    sudo chmod -R 755 /var/www/webber
    ```
 
@@ -122,7 +122,7 @@ Edit `/etc/webber/config.json` as needed:
 
    ```bash
    sudo cp -r dist/<project-name>/* /var/www/webber/
-   sudo chown -R tornado:tornado /var/www/webber
+   sudo chown -R webber:webber /var/www/webber
    sudo chmod -R 755 /var/www/webber
    ```
 
