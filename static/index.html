@@ -30,7 +30,7 @@
   </head>
   <body class="min-h-screen bg-gray-100 flex items-center justify-center p-4">
     <div class="bg-white p-8 rounded-lg shadow-xl max-w-4xl w-full text-center">
-     <img src="https://placehold.co/100x100/007bff/ffffff?text=Webber" alt="Webber Logo" class="mx-auto mb-6 rounded-full shadow-md" />
+      <img src="./webber-logo.png" alt="Webber Logo" class="mx-auto mb-6 w-42 h-42" />
       <h1 class="text-4xl font-extrabold text-blue-700 mb-4">
         Welcome to Webber Web Server!
       </h1>
@@ -115,15 +115,19 @@
         <pre
           class="bg-gray-800 text-white p-4 rounded-lg text-left text-sm overflow-x-auto"
         ><code>{
-  "port": "443",           // Port for the server to listen on (e.g., "80" for HTTP, "443" for HTTPS)
+  "port": "443",          // Port for the server to listen on (e.g., "80" for HTTP, "443" for HTTPS)
   "static_dir": "./static",   // Directory to serve static files from (e.g., "index.html")
-  "proxy_targets": [         // List of backend URLs for the reverse proxy
+  "proxy_targets": [          // List of backend URLs for the reverse proxy
     "http://localhost:8081",
-    "http://localhost:8082"
+    "http://localhost:8082",
+    "http://localhost:5715"   // Your application's port for proxy testing
   ],
-  "rate_limit_rps": 10.0,    // Requests per second allowed per client IP
-  "rate_limit_burst": 20,    // Burst capacity for the rate limiter
-  "cache_ttl_seconds": 300   // Time-to-live for static file cache entries in seconds
+  "rate_limit_rps": 10.0,     // Requests per second allowed per client IP
+  "rate_limit_burst": 20,     // Burst capacity for the rate limiter
+  "cache_ttl_seconds": 300,   // Time-to-live for static file cache entries in seconds
+  "certFile": "cert.pem",     // Path to your TLS certificate file
+  "keyFile": "key.pem",       // Path to your TLS key file
+  "debug": false              // Set to true for more verbose logging, false for production
 }</code></pre>
       </div>
       <p class="text-sm text-gray-500 mt-8">Built with ❤️ by ElectronSz.</p>
