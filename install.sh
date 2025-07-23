@@ -1,13 +1,13 @@
 #!/bin/bash
 
 # Configuration
-SERVICE_NAME="tornado"
-BINARY_NAME="tornado"
+SERVICE_NAME="webber"
+BINARY_NAME="webber"
 INSTALL_DIR="/usr/local/bin"
-CONFIG_DIR="/etc/tornado"
-STATIC_DIR="/var/www/tornado"
-USER="tornado"
-GROUP="tornado"
+CONFIG_DIR="/etc/webber"
+STATIC_DIR="/var/www/webber"
+USER="webber"
+GROUP="webber"
 
 # Ensure script is run as root
 if [ "$EUID" -ne 0 ]; then
@@ -21,7 +21,7 @@ if ! id "$USER" >/dev/null 2>&1; then
 fi
 
 # Build Go binary
-echo "Building Tornado web server."
+echo "Building Webber web server."
 go build -o "$BINARY_NAME" main.go
 if [ $? -ne 0 ]; then
   echo "Build failed"
@@ -65,7 +65,7 @@ setcap 'cap_net_bind_service=+ep' "$INSTALL_DIR/$BINARY_NAME"
 # Create systemd service file with better restart policy
 cat > /etc/systemd/system/"$SERVICE_NAME".service <<EOF
 [Unit]
-Description=Tornado Web Server
+Description=Webber Web Server
 After=network.target
 
 [Service]
@@ -75,7 +75,7 @@ User=$USER
 Group=$GROUP
 Restart=always
 RestartSec=5
-ExecStartPre=/bin/sh -c 'echo Starting Tornado > /tmp/tornado.log'
+ExecStartPre=/bin/sh -c 'echo Starting Webber > /tmp/webber.log'
 Environment=DEBUG=1
 
 [Install]
@@ -92,6 +92,6 @@ if systemctl is-active "$SERVICE_NAME" >/dev/null; then
   echo "Installation complete. Service $SERVICE_NAME is running."
   echo "Access at https://localhost:443"
 else
-  echo "Service failed to start. Check logs with 'journalctl -u tornado' or /tmp/tornado.log"
+  echo "Service failed to start. Check logs with 'journalctl -u webber' or /tmp/webber.log"
   exit 1
 fi

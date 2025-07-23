@@ -3,18 +3,16 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Welcome to Tornado Web Server</title>
+    <title>Welcome to Webber Web Server</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-      /* Optional: Custom font if not using default Tailwind font stack */
       body {
         font-family: "Inter", sans-serif;
       }
-      /* Custom scrollbar for pre tags */
       pre {
         overflow-x: auto;
         scrollbar-width: thin;
-        scrollbar-color: #a0aec0 #edf2f7; /* thumb and track color */
+        scrollbar-color: #a0aec0 #edf2f7;
       }
       pre::-webkit-scrollbar {
         height: 8px;
@@ -32,12 +30,12 @@
   </head>
   <body class="min-h-screen bg-gray-100 flex items-center justify-center p-4">
     <div class="bg-white p-8 rounded-lg shadow-xl max-w-4xl w-full text-center">
-     <img src="https://placehold.co/100x100/007bff/ffffff?text=Tornado" alt="Tornado Logo" class="mx-auto mb-6 rounded-full shadow-md" />
+     <img src="https://placehold.co/100x100/007bff/ffffff?text=Webber" alt="Webber Logo" class="mx-auto mb-6 rounded-full shadow-md" />
       <h1 class="text-4xl font-extrabold text-blue-700 mb-4">
-        Welcome to Tornado Web Server!
+        Welcome to Webber Web Server!
       </h1>
       <p class="text-lg text-gray-700 mb-6">
-        This is the default welcome page for your Go-powered Tornado web server.
+        This is the default welcome page for your Go-powered Webber web server.
       </p>
 
       <div class="mt-8 pt-6 border-t border-gray-200">
@@ -53,7 +51,7 @@
           <li>
             <strong class="text-blue-600">Rate Limiting:</strong> Protects
             against abuse by limiting requests per client IP. Configurable via
-            `RateLimitRPS` and `RateLimitBurst`.
+            <code>RateLimitRPS</code> and <code>RateLimitBurst</code>.
           </li>
           <li>
             <strong class="text-blue-600">Gzip Compression:</strong>
@@ -62,7 +60,7 @@
           </li>
           <li>
             <strong class="text-blue-600">URL Rewriting:</strong> Demonstrates
-            how to redirect or rewrite URLs (e.g., `/old` to `/new`). Try
+            how to redirect or rewrite URLs (e.g., <code>/old</code> to <code>/new</code>). Try
             <a
               href="/old/example"
               class="text-blue-500 hover:text-blue-700 font-medium underline"
@@ -96,7 +94,7 @@
               >Static File Serving with Caching:</strong
             >
             Efficiently serves static assets from the configured directory
-            (`/static/`) with in-memory caching based on `CacheTTLSeconds`.
+            with in-memory caching based on <code>CacheTTLSeconds</code>.
           </li>
           <li>
             <strong class="text-blue-600">HTTP/2 and TLS:</strong> Secure and
@@ -108,7 +106,7 @@
       <div class="mt-8 pt-6 border-t border-gray-200">
         <h2 class="text-2xl font-bold text-gray-800 mb-4">Configuration</h2>
         <p class="text-gray-700 mb-4">
-          Tornado Web Server is configured via a
+          Webber Web Server is configured via a
           <code class="bg-gray-200 px-1 py-0.5 rounded text-sm"
             >config.json</code
           >
