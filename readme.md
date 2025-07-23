@@ -138,7 +138,7 @@ Edit `/etc/webber/config.json` as needed:
 
 ## **Default Welcome Page**
 
-The default `index.html` demonstrates Tornado's features and configuration. Replace it with your SPA's build output as described above.
+The default `index.html` demonstrates Webber's features and configuration. Replace it with your SPA's build output as described above.
 
 ---
 
