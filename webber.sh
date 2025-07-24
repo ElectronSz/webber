@@ -8,7 +8,7 @@ CONFIG_DIR="/etc/webber"
 STATIC_DIR="/var/www/webber"
 USER="webber"
 GROUP="webber"
-WEBBER_BINARY_URL="https://github.com/ElectronSz/webber/releases/download/v1.0.1/webber"
+WEBBER_BINARY_URL="https://github.com/ElectronSz/webber/releases/download/v1.0.2/webber"
 TMP_DOWNLOAD_DIR="/tmp"
 
 # Ensure script is run as root
