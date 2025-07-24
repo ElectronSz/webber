@@ -28,109 +28,254 @@
       }
     </style>
   </head>
-  <body class="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-    <div class="bg-white p-8 rounded-lg shadow-xl max-w-4xl w-full text-center">
-      <img src="./webber-logo.png" alt="Webber Logo" class="mx-auto mb-6 w-42 h-42" />
-      <h1 class="text-4xl font-extrabold text-blue-700 mb-4">
-        Welcome to Webber Web Server!
+  <body class="min-h-screen bg-gradient-to-br from-orange-100 to-amber-200 flex items-center justify-center p-4">
+    <div class="bg-white p-8 rounded-xl shadow-2xl max-w-4xl w-full text-center border border-orange-200">
+      <!-- Logo and Main Title Section -->
+      <img src="./logo.png" alt="Webber Logo" width="250px" class="mx-auto mb-6 h-auto rounded-lg shadow-md" />
+      <h1 class="text-5xl font-extrabold text-orange-600 mb-4 tracking-tight">
+        Webber Web Server
       </h1>
-      <p class="text-lg text-gray-700 mb-6">
+      <p class="text-lg text-gray-700 mb-8 max-w-2xl mx-auto">
         This is the default welcome page for your Go-powered Webber web server.
       </p>
 
-      <div class="mt-8 pt-6 border-t border-gray-200">
-        <h2 class="text-2xl font-bold text-gray-800 mb-4">Server Features</h2>
-        <ul
-          class="list-disc list-inside mx-auto max-w-xl text-left text-gray-600 space-y-2"
-        >
+      <!-- About Webber Section -->
+      <div class="mt-8 pt-6 border-t-2 border-orange-300">
+        <h2 class="text-3xl font-bold text-orange-500 mb-4">About Webber</h2>
+        <p class="text-gray-700 mb-6 leading-relaxed">
+          Webber is a modern, high-performance Go web server inspired by Nginx, with support for static file hosting (optimized for Vue.js, React, Angular, and other SPA builds), reverse proxying, WebSocket, rate limiting, gzip compression, in-memory caching, HTTP/2, and TLS.
+        </p>
+      </div>
+
+      <!-- Features Section -->
+      <div class="mt-10 pt-6 border-t-2 border-orange-300">
+        <h2 class="text-3xl font-bold text-orange-500 mb-6">Features</h2>
+        <ul class="list-disc list-inside mx-auto max-w-2xl text-left text-gray-700 space-y-3">
           <li>
-            <strong class="text-blue-600">Logging Middleware:</strong> Every
-            request is logged, showing method, URI, remote address, and
-            completion time.
+            <strong class="text-orange-600">Logging Middleware:</strong> Logs every HTTP request and response time, providing valuable insights into server activity.
           </li>
           <li>
-            <strong class="text-blue-600">Rate Limiting:</strong> Protects
-            against abuse by limiting requests per client IP. Configurable via
-            <code>RateLimitRPS</code> and <code>RateLimitBurst</code>.
+            <strong class="text-orange-600">Rate Limiting:</strong> Protects against abuse by limiting requests per client IP. Configurable via
+            <code class="bg-orange-100 text-orange-800 px-2 py-1 rounded-md text-sm font-mono"
+              >RateLimitRPS</code
+            >
+            and
+            <code class="bg-orange-100 text-orange-800 px-2 py-1 rounded-md text-sm font-mono"
+              >RateLimitBurst</code
+            >.
           </li>
           <li>
-            <strong class="text-blue-600">Gzip Compression:</strong>
-            Automatically compresses responses for supported clients, reducing
-            bandwidth usage and improving load times.
+            <strong class="text-orange-600">Gzip Compression:</strong>
+            Automatically compresses responses for supported clients, significantly reducing bandwidth usage and improving load times.
           </li>
           <li>
-            <strong class="text-blue-600">URL Rewriting:</strong> Demonstrates
-            how to redirect or rewrite URLs (e.g., <code>/old</code> to <code>/new</code>). Try
+            <strong class="text-orange-600">URL Rewriting:</strong> Demonstrates how to redirect or rewrite URLs (e.g.,
+            <code class="bg-orange-100 text-orange-800 px-2 py-1 rounded-md text-sm font-mono"
+              >/old/example</code
+            >
+            to
+            <code class="bg-orange-100 text-orange-800 px-2 py-1 rounded-md text-sm font-mono"
+              >/new/example</code
+            >). Try
             <a
               href="/old/example"
-              class="text-blue-500 hover:text-blue-700 font-medium underline"
-              >/old/example</a
+              class="text-blue-600 hover:text-blue-800 font-medium underline transition duration-300 ease-in-out"
+              >this example</a
             >.
           </li>
           <li>
-            <strong class="text-blue-600"
+            <strong class="text-orange-600"
               >Reverse Proxy & Load Balancing:</strong
             >
-            Distributes incoming requests across multiple backend servers using
-            a round-robin strategy. See
+            Distributes incoming requests across multiple backend servers using a round-robin strategy, enhancing availability and performance. See
             <a
               href="/proxy"
-              class="text-blue-500 hover:text-blue-700 font-medium underline"
-              >/proxy</a
+              class="text-blue-600 hover:text-blue-800 font-medium underline transition duration-300 ease-in-out"
+              >the proxy endpoint</a
             >.
           </li>
           <li>
-            <strong class="text-blue-600">WebSocket Support:</strong> Provides a
-            dedicated endpoint for real-time, bidirectional communication.
-            Access it at
+            <strong class="text-orange-600">WebSocket Support:</strong> Provides a dedicated endpoint for real-time, bidirectional communication, ideal for interactive applications. Access it at
             <a
               href="/ws"
-              class="text-blue-500 hover:text-blue-700 font-medium underline"
+              class="text-blue-600 hover:text-blue-800 font-medium underline transition duration-300 ease-in-out"
               >/ws</a
             >.
           </li>
           <li>
-            <strong class="text-blue-600"
+            <strong class="text-orange-600"
               >Static File Serving with Caching:</strong
             >
-            Efficiently serves static assets from the configured directory
-            with in-memory caching based on <code>CacheTTLSeconds</code>.
+            Efficiently serves static assets from the configured directory with in-memory caching based on
+            <code class="bg-orange-100 text-orange-800 px-2 py-1 rounded-md text-sm font-mono"
+              >CacheTTLSeconds</code
+            >.
           </li>
           <li>
-            <strong class="text-blue-600">HTTP/2 and TLS:</strong> Secure and
-            high-performance communication enabled by default.
+            <strong class="text-orange-600">HTTP/2 and TLS:</strong> Secure and high-performance communication enabled by default, ensuring data integrity and faster connections.
+          </li>
+          <li>
+            <strong class="text-orange-600">SPA Routing Support:</strong> Unmatched routes serve
+            <code class="bg-orange-100 text-orange-800 px-2 py-1 rounded-md text-sm font-mono"
+              >index.html</code
+            >
+            for client-side navigation (Vue.js, React, Angular, etc.), crucial for single-page applications.
           </li>
         </ul>
       </div>
 
-      <div class="mt-8 pt-6 border-t border-gray-200">
-        <h2 class="text-2xl font-bold text-gray-800 mb-4">Configuration</h2>
-        <p class="text-gray-700 mb-4">
-          Webber Web Server is configured via a
-          <code class="bg-gray-200 px-1 py-0.5 rounded text-sm"
-            >config.json</code
+      <!-- Getting Started Section -->
+      <div class="mt-10 pt-6 border-t-2 border-orange-300">
+        <h2 class="text-3xl font-bold text-orange-500 mb-6">Getting Started</h2>
+        <p class="text-gray-700 mb-4 text-left leading-relaxed">
+          This section will guide you through the initial setup and configuration of your Webber web server.
+        </p>
+        <h3 class="text-left text-2xl font-semibold text-orange-400 mb-4">1. Installation</h3>
+        <pre
+          class="bg-gray-800 text-green-400 p-4 rounded-lg text-left text-sm overflow-x-auto mb-8 shadow-inner"
+          ><code>sudo ./install.sh</code></pre>
+        <p class="text-gray-700 text-left mb-4 leading-relaxed">
+          The provided install script automates the setup process, performing the following actions:
+        </p>
+        <ul class="list-disc list-inside max-w-xl text-left text-gray-700 space-y-1 mb-6">
+          <li>Clones the repository from GitHub.</li>
+          <li>Builds the Go binary for the server.</li>
+          <li>Copies necessary configuration and static files to their respective locations.</li>
+          <li>Sets up the systemd service for easy management and ensures TLS certificates are in place.</li>
+        </ul>
+        
+
+        <h3 class="text-2xl text-left font-semibold text-orange-400 mb-4">2. Configuration</h3>
+        <p class="text-gray-700 mb-4 leading-relaxed">
+          Customize your Webber Web Server by editing the
+          <code class="bg-orange-100 text-orange-800 px-2 py-1 rounded-md text-sm font-mono"
+            >/etc/webber/config.json</code
           >
-          file in the same directory as the executable.
+          file. Here's a detailed breakdown of the configurable parameters:
         </p>
         <pre
-          class="bg-gray-800 text-white p-4 rounded-lg text-left text-sm overflow-x-auto"
+          class="bg-gray-800 text-white p-4 rounded-lg text-left text-sm overflow-x-auto shadow-inner"
         ><code>{
-  "port": "443",          // Port for the server to listen on (e.g., "80" for HTTP, "443" for HTTPS)
-  "static_dir": "./static",   // Directory to serve static files from (e.g., "index.html")
-  "proxy_targets": [          // List of backend URLs for the reverse proxy
-    "http://localhost:8081",
-    "http://localhost:8082",
-    "http://localhost:5715"   // Your application's port for proxy testing
-  ],
-  "rate_limit_rps": 10.0,     // Requests per second allowed per client IP
-  "rate_limit_burst": 20,     // Burst capacity for the rate limiter
-  "cache_ttl_seconds": 300,   // Time-to-live for static file cache entries in seconds
-  "certFile": "cert.pem",     // Path to your TLS certificate file
-  "keyFile": "key.pem",       // Path to your TLS key file
-  "debug": false              // Set to true for more verbose logging, false for production
+  "port": "443",              // The port on which the server will listen (e.g., "80" for HTTP, "443" for HTTPS).
+  "static_dir": "/var/www/webber", // The directory from which static files (like index.html, JS, CSS, images) will be served.
+  "rate_limit_rps": 10.0,     // The maximum number of requests per second allowed per client IP address.
+  "rate_limit_burst": 20,     // The maximum burst capacity for the rate limiter, allowing temporary spikes in requests.
+  "cache_ttl_seconds": 300,   // The time-to-live (TTL) for static file cache entries, in seconds.
+  "certFile": "cert.pem",     // Path to your TLS certificate file (automatically generated by install.sh if not present).
+  "keyFile": "key.pem",       // Path to your TLS key file (automatically generated by install.sh if not present).
+  "debug": false              // Set to true for more verbose logging, false for production environments.
 }</code></pre>
       </div>
-      <p class="text-sm text-gray-500 mt-8">Built with ❤️ by ElectronSz.</p>
+
+      <!-- Deploy SPA Section -->
+      <div class="mt-10 pt-6 border-t-2 border-orange-300">
+        <h2 class="text-2xl text-left font-bold text-orange-500 mb-6">3. Deploy an SPA (Vue.js, React, Angular)</h2>
+
+        <h3 class="text-2xl font-semibold text-left text-orange-400 mb-4">Vue.js</h3>
+        <p class="text-gray-700 mb-2 text-left">1. Build your Vue.js project:</p>
+        <pre
+          class="bg-gray-800 text-green-400 p-4 rounded-lg text-left text-sm overflow-x-auto mb-4 shadow-inner"
+          ><code>npm run build</code></pre>
+        <p class="text-gray-700 mb-2 text-left">2. Copy the contents of the <code class="bg-orange-100 text-orange-800 px-2 py-1 rounded-md text-sm font-mono">dist/</code> folder to <code class="bg-orange-100 text-orange-800 px-2 py-1 rounded-md text-sm font-mono">/var/www/webber</code>:</p>
+        <pre
+          class="bg-gray-800 text-green-400 p-4 rounded-lg text-left text-sm overflow-x-auto mb-4 shadow-inner"
+          ><code>sudo cp -r dist/* /var/www/webber/
+sudo chown -R webber:webber /var/www/webber
+sudo chmod -R 755 /var/www/webber</code></pre>
+        <p class="text-gray-700 mb-2 text-left">3. Restart Webber to apply changes:</p>
+        <pre
+          class="bg-gray-800 text-green-400 p-4 rounded-lg text-left text-sm overflow-x-auto mb-4 shadow-inner"
+          ><code>sudo systemctl restart webber</code></pre>
+        <p class="text-gray-700 mb-8 text-left">4. Visit <a href="https://localhost/" class="text-blue-600 hover:text-blue-800 font-medium underline transition duration-300 ease-in-out">https://localhost/</a> to see your Vue app in action.</p>
+
+        <h3 class="text-2xl text-left font-semibold text-orange-400 mb-4">React</h3>
+        <p class="text-gray-700 mb-2 text-left">1. Build your React project:</p>
+        <pre
+          class="bg-gray-800 text-green-400 p-4 rounded-lg text-left text-sm overflow-x-auto mb-4 shadow-inner"
+          ><code>npm run build</code></pre>
+        <p class="text-gray-700 mb-2 text-left">2. Copy the contents of the <code class="bg-orange-100 text-orange-800 px-2 py-1 rounded-md text-sm font-mono">build/</code> folder to <code class="bg-orange-100 text-orange-800 px-2 py-1 rounded-md text-sm font-mono">/var/www/webber</code>:</p>
+        <pre
+          class="bg-gray-800 text-green-400 p-4 rounded-lg text-left text-sm overflow-x-auto mb-4 shadow-inner"
+          ><code>sudo cp -r build/* /var/www/webber/
+sudo chown -R webber:webber /var/www/webber
+sudo chmod -R 755 /var/www/webber</code></pre>
+        <p class="text-gray-700 mb-2 text-left">3. Restart Webber to apply changes:</p>
+        <pre
+          class="bg-gray-800 text-green-400 p-4 rounded-lg text-left text-sm overflow-x-auto mb-4 shadow-inner"
+          ><code>sudo systemctl restart webber</code></pre>
+        <p class="text-gray-700 mb-8 text-left">4. Visit <a href="https://localhost/" class="text-blue-600 hover:text-blue-800 font-medium underline transition duration-300 ease-in-out">https://localhost/</a> to see your React app in action.</p>
+
+        <h3 class="text-2xl font-semibold text-orange-400 mb-4 text-left">Angular</h3>
+        <p class="text-gray-700 mb-2 text-left">1. Build your Angular project:</p>
+        <pre
+          class="bg-gray-800 text-green-400 p-4 rounded-lg text-left text-sm overflow-x-auto mb-4 shadow-inner"
+          ><code>ng build --prod</code></pre>
+        <p class="text-gray-700 mb-2 text-left">2. Copy the contents of the <code class="bg-orange-100 text-orange-800 px-2 py-1 rounded-md text-sm font-mono">dist/&lt;project-name&gt;/</code> folder to <code class="bg-orange-100 text-orange-800 px-2 py-1 rounded-md text-sm font-mono">/var/www/webber</code>:</p>
+        <pre
+          class="bg-gray-800 text-green-400 p-4 rounded-lg text-left text-sm overflow-x-auto mb-4 shadow-inner"
+          ><code>sudo cp -r dist/&lt;project-name&gt;/* /var/www/webber/
+sudo chown -R webber:webber /var/www/webber
+sudo chmod -R 755 /var/www/webber</code></pre>
+        <p class="text-gray-700 mb-2 text-left">3. Restart Webber to apply changes:</p>
+        <pre
+          class="bg-gray-800 text-green-400 p-4 rounded-lg text-left text-sm overflow-x-auto mb-4 shadow-inner"
+          ><code>sudo systemctl restart webber</code></pre>
+        <p class="text-gray-700 mb-8 text-left">4. Visit <a href="https://localhost/" class="text-blue-600 hover:text-blue-800 font-medium underline transition duration-300 ease-in-out">https://localhost/</a> to see your Angular app in action.</p>
+      </div>
+
+      <!-- Default Welcome Page Section -->
+      <div class="mt-10 pt-6 border-t-2 border-orange-300">
+        <h2 class="text-3xl font-bold text-orange-500 mb-4">Default Welcome Page</h2>
+        <p class="text-gray-700 mb-6 leading-relaxed">
+          The current
+          <code class="bg-orange-100 text-orange-800 px-2 py-1 rounded-md text-sm font-mono">index.html</code>
+          you are viewing serves as a comprehensive demonstration of Webber's features and configuration options. To deploy your own single-page application, simply replace this file with your SPA's build output as detailed in the deployment instructions above.
+        </p>
+      </div>
+
+      <!-- Static File MIME Types Section -->
+      <div class="mt-10 pt-6 border-t-2 border-orange-300">
+        <h2 class="text-3xl font-bold text-orange-500 mb-4">Static File MIME Types</h2>
+        <p class="text-gray-700 mb-6 leading-relaxed">
+          Webber automatically provides correct MIME types for all common static assets, including CSS, JavaScript, fonts, SVG, and more. This ensures seamless compatibility and optimal performance for modern frontend builds.
+        </p>
+      </div>
+
+      <!-- TLS Certificates Section -->
+      <div class="mt-10 pt-6 border-t-2 border-orange-300">
+        <h2 class="text-3xl font-bold text-orange-500 mb-4">TLS Certificates</h2>
+        <p class="text-gray-700 mb-6 leading-relaxed">
+          The <code class="bg-orange-100 text-orange-800 px-2 py-1 rounded-md text-sm font-mono">install.sh</code> script conveniently generates self-signed certificates for immediate use if no custom certificates are provided. For production environments, it is highly recommended to replace the default certificates located at
+          <code class="bg-orange-100 text-orange-800 px-2 py-1 rounded-md text-sm font-mono">/etc/webber/cert.pem</code>
+          and
+          <code class="bg-orange-100 text-orange-800 px-2 py-1 rounded-md text-sm font-mono">/etc/webber/key.pem</code>
+          with your own trusted TLS certificates.
+        </p>
+      </div>
+
+      <!-- Service Management Section -->
+      <div class="mt-10 pt-6 border-t-2 border-orange-300">
+        <h2 class="text-3xl font-bold text-orange-500 mb-4">Service Management</h2>
+        <p class="text-gray-700 mb-4 leading-relaxed">
+          Manage the Webber service using standard systemd commands:
+        </p>
+        <pre
+          class="bg-gray-800 text-green-400 p-4 rounded-lg text-left text-sm overflow-x-auto mb-8 shadow-inner"
+          ><code>sudo systemctl status webber    # Check the status of the Webber service
+sudo systemctl restart webber   # Restart the Webber service to apply configuration changes
+sudo journalctl -u webber       # View the logs for the Webber service</code></pre>
+      </div>
+
+      <!-- Contributing Section -->
+      <div class="mt-10 pt-6 border-t-2 border-orange-300">
+        <h2 class="text-3xl font-bold text-orange-500 mb-4">Contributing</h2>
+        <p class="text-gray-700 mb-6 leading-relaxed">
+          Contributions, bug reports, and feature requests are highly welcome! Please feel free to open a Pull Request (PR) or submit an issue on the GitHub repository.
+        </p>
+      </div>
+
+      <!-- Footer -->
+     <p class="text-sm text-gray-600 mt-10">Built in Eswatini with ❤️ by <a href="https://github.com/ElectronSz" class="text-blue-600 hover:text-blue-800 font-medium underline transition duration-300 ease-in-out">ElectronSz</a>.</p>
     </div>
   </body>
 </html>

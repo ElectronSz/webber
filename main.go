@@ -22,7 +22,7 @@ import (
 	"golang.org/x/time/rate"
 )
 
-// Config struct for server configuration (mimics nginx.conf)
+// Config struct for server configuration
 type Config struct {
 	Port            string   `json:"port"`
 	StaticDir       string   `json:"static_dir"`
@@ -364,7 +364,7 @@ func main() {
 		fmt.Fprintf(w, "You've reached the rewritten URL: %s", r.URL.Path)
 	})
 
-	// Static files handler: Serve everything from root (for Vue.js builds)
+	// Static files handler: Serve everything from root
 	r.PathPrefix("/").Handler(staticFileHandler(config.StaticDir, cache))
 
 	// Catch-all route: Serve index.html for non-file, non-API paths (SPA support)
@@ -385,7 +385,7 @@ func main() {
 		w.Write(body)
 	})
 
-	// --- MIDDLEWARE APPLICATION ---
+	//APPLY MIDDLEWARES
 	r.Use(loggingMiddleware)
 	r.Use(rateLimitMiddleware(rl))
 	r.Use(gzipMiddleware)

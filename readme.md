@@ -167,4 +167,4 @@ sudo journalctl -u webber
 ## **Contributing**
 
 PRs and issues are welcome!  
-Built with ❤️ by [ElectronSz](https://github.com/ElectronSz).
+Built in Eswatini with ❤️ by [ElectronSz](https://github.com/ElectronSz).
