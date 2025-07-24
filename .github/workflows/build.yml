@@ -1,0 +1,45 @@
+# This workflow builds the Webber Go binary on every push to the main branch.
+# It can be extended to create GitHub Releases or Docker images.
+name: Build Webber Binary
+
+on:
+  push:
+    branches:
+      - main # Trigger this workflow on pushes to the 'main' branch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest # Use the latest Ubuntu runner
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4 # Action to checkout your repository code
+
+      - name: Set up Go
+        uses: actions/setup-go@v5 # Action to set up the Go environment
+        with:
+          go-version: '1.22' # Specify the Go version to use
+
+      - name: Build Webber Binary
+        run: |
+          echo "Building Webber binary..."
+          # Build the Go application.
+          # CGO_ENABLED=0 disables CGO, which makes the binary statically linked
+          # and easier to distribute.
+          # -o webber specifies the output file name.
+          # ./cmd/webber specifies the path to your main package.
+          CGO_ENABLED=0 go build -o webber ./cmd/webber
+          echo "Webber binary built successfully."
+
+      - name: Verify Binary
+        run: |
+          # Check if the binary was created and is executable
+          ls -l webber
+          ./webber -h || true # Run with -h to check if it's executable, allow failure for help text
+
+      - name: Upload Webber Binary as Artifact
+        uses: actions/upload-artifact@v4 # Action to upload built files as workflow artifacts
+        with:
+          name: webber-binary # Name of the artifact
+          path: webber # Path to the binary file to upload
+          retention-days: 5 # How long to keep the artifact (optional)
