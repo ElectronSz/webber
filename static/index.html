@@ -115,26 +115,9 @@
           This section will guide you through the initial setup and
           configuration of your Webber web server.
         </p>
-        <h3 class="subsection-title text-left">1. Installation</h3>
-        <pre><code class="language-bash">sudo ./install.sh</code></pre>
-        <p class="text-gray-700 text-left mb-4 leading-relaxed">
-          The provided install script automates the setup process, performing
-          the following actions:
-        </p>
-        <ul class="list-disc list-inside max-w-xl text-left text-gray-700 space-y-1 mb-6">
-          <li>Clones the repository from GitHub.</li>
-          <li>Builds the Go binary for the server.</li>
-          <li>
-            Copies necessary configuration and static files to their respective
-            locations.
-          </li>
-          <li>
-            Sets up the systemd service for easy management and ensures TLS
-            certificates are in place.
-          </li>
-        </ul>
+    
 
-        <h3 class="subsection-title text-left">2. Configuration</h3>
+        <h3 class="subsection-title text-left">1. Configuration</h3>
         <p class="text-gray-700 mb-4 leading-relaxed">
           Customize your Webber Web Server by editing the
           <code class="">/etc/webber/config.json</code> file. Here's a detailed
@@ -154,7 +137,7 @@
 
       <div class="section-divider">
         <h2 class="section-title text-left mb-6">
-          3. Deploy an SPA (Vue.js, React, Angular)
+          2. Deploy an SPA (Vue.js, React, Angular)
         </h2>
 
         <h3 class="subsection-title text-left">Vue.js</h3>
@@ -165,8 +148,9 @@
           <code class="">/var/www/webber</code>:
         </p>
         <pre><code class="language-bash">sudo cp -r dist/* /var/www/webber/
-sudo chown -R webber:webber /var/www/webber
-sudo chmod -R 755 /var/www/webber</code></pre>
+          sudo chown -R webber:webber /var/www/webber
+          sudo chmod -R 755 /var/www/webber
+        </code></pre>
         <p class="text-gray-700 mb-2 text-left">3. Restart Webber to apply changes:</p>
         <pre><code class="language-bash">sudo systemctl restart webber</code></pre>
         <p class="text-gray-700 mb-8 text-left">
