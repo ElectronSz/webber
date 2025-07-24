@@ -5,7 +5,7 @@ SERVICE_NAME="webber"
 BINARY_NAME="webber"
 INSTALL_DIR="/usr/local/bin"
 CONFIG_DIR="/etc/webber"
-STATIC_DIR="/var/www/webber"
+STATIC_DIR="/var/www/webber" # This is where the web server will serve files from
 USER="webber"
 GROUP="webber"
 WEBBER_BINARY_URL="https://github.com/ElectronSz/webber/releases/download/v1.0.2/webber"
@@ -137,6 +137,7 @@ echo "Reloading systemd daemon, enabling and starting $SERVICE_NAME service..."
 systemctl daemon-reload
 systemctl enable "$SERVICE_NAME"
 systemctl start "$SERVICE_NAME"
+echo "Service $SERVICE_NAME started successfully."
 
 # Check service status
 echo "Checking $SERVICE_NAME service status..."
