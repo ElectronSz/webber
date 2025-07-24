@@ -93,6 +93,94 @@ type Cache struct {
 	ttl   time.Duration
 }
 
+// MimeTypeMap stores common MIME types by file extension.
+var MimeTypeMap = map[string]string{
+	".html": "text/html; charset=utf-8",
+	".css":  "text/css; charset=utf-8",
+	".js":   "application/javascript; charset=utf-8",
+	".json": "application/json; charset=utf-8",
+	".png":  "image/png",
+	".jpg":  "image/jpeg",
+	".jpeg": "image/jpeg",
+	".gif":  "image/gif",
+	".svg":  "image/svg+xml",
+	".ico":  "image/x-icon",
+	".woff": "font/woff",
+	".woff2": "font/woff2",
+	".ttf":  "font/ttf",
+	".eot":  "application/vnd.ms-fontobject",
+	".otf":  "font/otf",
+	".webp": "image/webp",
+	".mp3":  "audio/mpeg",
+	".wav":  "audio/wav",
+	".ogg":  "application/ogg", // For audio/video
+	".mp4":  "video/mp4",
+	".webm": "video/webm",
+	".pdf":  "application/pdf",
+	".xml":  "application/xml; charset=utf-8", // Consolidated XML
+	".txt":  "text/plain; charset=utf-8",    // Consolidated TXT
+	".csv":  "text/csv; charset=utf-8",
+	".zip":  "application/zip",
+	".tar":  "application/x-tar",
+	".gz":   "application/gzip",
+	".rar":  "application/x-rar-compressed",
+	".7z":   "application/x-7z-compressed",
+	".doc":  "application/msword",
+	".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+	".xls":  "application/vnd.ms-excel",
+	".xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+	".ppt":  "application/vnd.ms-powerpoint",
+	".pptx": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+	".md":   "text/markdown; charset=utf-8",
+	".xsl":  "application/xml; charset=utf-8",
+	".xsd":  "application/xml; charset=utf-8",
+	".yaml": "application/x-yaml; charset=utf-8",
+	".yml":  "application/x-yaml; charset=utf-8",
+	".toml": "application/toml; charset=utf-8",
+	".wasm": "application/wasm",
+	".webmanifest": "application/manifest+json",
+	".appcache":    "text/cache-manifest",
+	".atom":        "application/atom+xml",
+	".rss":         "application/rss+xml",
+	".xhtml":       "application/xhtml+xml",
+	".xht":         "application/xhtml+xml",
+	".vtt":         "text/vtt; charset=utf-8",
+	".srt":         "application/x-subrip",
+	".ics":         "text/calendar",
+	".jsonld":      "application/ld+json",
+	".geojson":     "application/geo+json",
+	".gpx":         "application/gpx+xml",
+	".kml":         "application/vnd.google-earth.kml+xml",
+	".kmz":         "application/vnd.google-earth.kmz",
+	".unityweb":    "application/vnd.unity",
+	".glsl":        "text/plain; charset=utf-8", // Common for shader files
+	".vert":        "text/plain; charset=utf-8", // Common for vertex shaders
+	".frag":        "text/plain; charset=utf-8", // Common for fragment shaders
+	".obj":         "application/octet-stream", // 3D model data
+	".mtl":         "text/plain; charset=utf-8", // Material for 3D models
+	".fbx":         "application/octet-stream", // Autodesk FBX
+	".gltf":        "model/gltf+json",
+	".glb":         "model/gltf-binary",
+	".bin":         "application/octet-stream", // Binary data, often with glTF
+	".stl":         "application/vnd.ms-pki.stl",
+	".dae":         "application/xml", // Collada
+	".blend":       "application/octet-stream", // Blender file
+	".exr":         "image/x-exr",
+	".hdr":         "image/vnd.radiance",
+	".psd":         "image/vnd.adobe.photoshop",
+	".ai":          "application/postscript",
+	".eps":         "application/postscript",
+	".dxf":         "image/vnd.dxf",
+	".dwg":         "image/vnd.dwg",
+	".step":        "application/step",
+	".stp":         "application/step",
+	".iges":        "application/iges",
+	".igs":         "application/iges",
+	".x3d":         "application/vnd.hzn-3d-crossword",
+	".x3dv":        "application/vnd.hzn-3d-crossword",
+	".x3db":        "application/vnd.hzn-3d-crossword",
+}
+
 // NewCache creates and returns a new Cache instance with a given TTL.
 func NewCache(ttl time.Duration) *Cache {
 	return &Cache{
@@ -302,28 +390,37 @@ func staticFileHandler(staticDir string, cache *Cache) http.Handler {
             log.Printf("Error reading file %s: %v", fullPath, err)
             return
         }
-        mimeType := http.DetectContentType(body)
-        ext := strings.ToLower(filepath.Ext(fullPath))
-        switch ext {
-        case ".css":
-            mimeType = "text/css"
-        case ".js":
-            mimeType = "application/javascript"
-        case ".json":
-            mimeType = "application/json"
-        case ".svg":
-            mimeType = "image/svg+xml"
-        case ".woff":
-            mimeType = "font/woff"
-        case ".woff2":
-            mimeType = "font/woff2"
-        case ".ttf":
-            mimeType = "font/ttf"
-        case ".eot":
-            mimeType = "application/vnd.ms-fontobject"
-        case ".ico":
-            mimeType = "image/x-icon"
-        }
+        // mimeType := http.DetectContentType(body)
+        // ext := strings.ToLower(filepath.Ext(fullPath))
+        // switch ext {
+        // case ".css":
+        //     mimeType = "text/css"
+        // case ".js":
+        //     mimeType = "application/javascript"
+        // case ".json":
+        //     mimeType = "application/json"
+        // case ".svg":
+        //     mimeType = "image/svg+xml"
+        // case ".woff":
+        //     mimeType = "font/woff"
+        // case ".woff2":
+        //     mimeType = "font/woff2"
+        // case ".ttf":
+        //     mimeType = "font/ttf"
+        // case ".eot":
+        //     mimeType = "application/vnd.ms-fontobject"
+        // case ".ico":
+        //     mimeType = "image/x-icon"
+        // }
+
+		// Determine MIME type using the MimeTypeMap first, then fallback to DetectContentType
+		mimeType := ""
+		ext := strings.ToLower(filepath.Ext(fullPath))
+		if mt, ok := MimeTypeMap[ext]; ok {
+			mimeType = mt
+		} else {
+			mimeType = http.DetectContentType(body)
+		}
         w.Header().Set("Content-Type", mimeType)
         w.Write(body)
         headersToCache := make(http.Header)

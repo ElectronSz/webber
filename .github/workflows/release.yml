@@ -1,0 +1,88 @@
+name: Release Go Binary
+
+on:
+  push:
+    tags:
+      - 'v*.*.*' # Trigger on pushes to tags like v1.0.0, v1.0.1, etc.
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest # Or windows-latest, macos-latest if you prefer a specific runner for initial setup
+    strategy:
+      matrix:
+        goos: [linux, windows, darwin]
+        goarch: [amd64, arm64] # Common architectures
+        exclude: # Exclude combinations that don't make sense (e.g., darwin/amd64 is generally x86_64, not true arm64)
+          - goos: windows
+            goarch: arm64 # Windows ARM64 needs specific build environment/toolchain
+          - goos: linux
+            goarch: arm64 # If you only target x86_64 for Linux
+          # You might also want to exclude darwin/amd64 if you only support M1/M2/etc. chips
+          # For older Macs, darwin/amd64 is fine (Intel Macs)
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22' # Specify the Go version you want to use. You can also use 'stable'.
+
+      - name: Set output file name
+        id: set_filename
+        run: |
+          BINARY_NAME="webber" # Your desired binary name
+          OS="${{ matrix.goos }}"
+          ARCH="${{ matrix.goarch }}"
+          
+          # Add .exe extension for Windows
+          if [ "$OS" == "windows" ]; then
+            BINARY_NAME="${BINARY_NAME}.exe"
+          fi
+          
+          # Append OS and Arch to the binary name for clarity in release assets
+          FINAL_BINARY_NAME="${BINARY_NAME}-${OS}-${ARCH}"
+          
+          echo "BINARY_NAME=${FINAL_BINARY_NAME}" >> $GITHUB_OUTPUT
+
+      - name: Build binary
+        run: |
+          GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} \
+          go build -o ${{ steps.set_filename.outputs.BINARY_NAME }} main.go
+        env:
+          # Optional: Add LDFLAGS for version information, etc.
+          # LDFLAGS: "-s -w -X main.version=${{ github.ref_name }}"
+
+      - name: Archive binary
+        run: |
+          OS="${{ matrix.goos }}"
+          ARCH="${{ matrix.goarch }}"
+          BINARY_PATH="${{ steps.set_filename.outputs.BINARY_NAME }}"
+          
+          if [ "$OS" == "windows" ]; then
+            zip "${BINARY_PATH}.zip" "${BINARY_PATH}"
+            echo "ARCHIVE_PATH=${BINARY_PATH}.zip" >> $GITHUB_OUTPUT
+          else
+            tar -czvf "${BINARY_PATH}.tar.gz" "${BINARY_PATH}"
+            echo "ARCHIVE_PATH=${BINARY_PATH}.tar.gz" >> $GITHUB_OUTPUT
+          fi
+        id: archive_step
+
+      - name: Create GitHub Release
+        # This action creates a draft release or updates an existing one
+        # and uploads the assets.
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/') # Only create release if triggered by a tag push
+        with:
+          tag_name: ${{ github.ref_name }} # The name of the tag (e.g., v1.0.0)
+          name: Release ${{ github.ref_name }}
+          draft: true # Set to true to create a draft release for manual review before publishing
+          prerelease: false # Set to true if this is a prerelease
+          # Generate release notes automatically from commit messages since last tag
+          generate_release_notes: true 
+          files: |
+            ${{ steps.archive_step.outputs.ARCHIVE_PATH }}
+            # You can add other files here, e.g., README.md, LICENSE
+            # README.md
+            # LICENSE
