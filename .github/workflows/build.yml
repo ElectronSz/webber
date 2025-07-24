@@ -13,29 +13,24 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4 # Action to checkout your repository code
+        uses: actions/checkout@v4 # Action to checkout repository code
 
       - name: Set up Go
         uses: actions/setup-go@v5 # Action to set up the Go environment
         with:
-          go-version: '1.22' # Specify the Go version to use
+          go-version: '1.18.1' # Specify the Go version to use
 
       - name: Build Webber Binary
         run: |
           echo "Building Webber binary..."
-          # Build the Go application.
-          # CGO_ENABLED=0 disables CGO, which makes the binary statically linked
-          # and easier to distribute.
-          # -o webber specifies the output file name.
-          # ./cmd/webber specifies the path to your main package.
-          CGO_ENABLED=0 go build -o webber ./cmd/webber
+          CGO_ENABLED=0 go build -o webber main.go
           echo "Webber binary built successfully."
 
       - name: Verify Binary
         run: |
           # Check if the binary was created and is executable
           ls -l webber
-          ./webber -h || true # Run with -h to check if it's executable, allow failure for help text
+          ./webber -h || true # Run help command to verify it works
 
       - name: Upload Webber Binary as Artifact
         uses: actions/upload-artifact@v4 # Action to upload built files as workflow artifacts
