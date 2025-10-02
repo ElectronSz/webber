@@ -27,6 +27,8 @@ type Config struct {
 	Port            string   `json:"port"`
 	StaticDir       string   `json:"static_dir"`
 	ProxyTargets    []string `json:"proxy_targets"`
+	ProxyMode       bool     `json:"proxy_mode"`        // Enable root-level reverse proxy mode
+	ProxyBackend    string   `json:"proxy_backend"`     // Single backend for simple reverse proxy (e.g., "http://localhost:3000")
 	RateLimitRPS    float64  `json:"rate_limit_rps"`
 	RateLimitBurst  int      `json:"rate_limit_burst"`
 	CacheTTLSeconds int      `json:"cache_ttl_seconds"`
@@ -230,6 +232,52 @@ var upgrader = websocket.Upgrader{
 	CheckOrigin:     func(r *http.Request) bool { return true },
 }
 
+// getClientIP extracts the real client IP address from the request
+func getClientIP(r *http.Request) string {
+	// Check X-Real-IP header first
+	if ip := r.Header.Get("X-Real-IP"); ip != "" {
+		return ip
+	}
+	// Check X-Forwarded-For header
+	if forwarded := r.Header.Get("X-Forwarded-For"); forwarded != "" {
+		// X-Forwarded-For can contain multiple IPs, take the first one
+		if idx := strings.Index(forwarded, ","); idx != -1 {
+			return strings.TrimSpace(forwarded[:idx])
+		}
+		return strings.TrimSpace(forwarded)
+	}
+	// Fall back to RemoteAddr
+	ip := r.RemoteAddr
+	if idx := strings.LastIndex(ip, ":"); idx != -1 {
+		ip = ip[:idx]
+	}
+	return ip
+}
+
+// getForwardedFor constructs the X-Forwarded-For header value
+func getForwardedFor(r *http.Request) string {
+	clientIP := r.RemoteAddr
+	if idx := strings.LastIndex(clientIP, ":"); idx != -1 {
+		clientIP = clientIP[:idx]
+	}
+	
+	if forwarded := r.Header.Get("X-Forwarded-For"); forwarded != "" {
+		return forwarded + ", " + clientIP
+	}
+	return clientIP
+}
+
+// getScheme determines the request scheme (http or https)
+func getScheme(r *http.Request) string {
+	if r.TLS != nil {
+		return "https"
+	}
+	if scheme := r.Header.Get("X-Forwarded-Proto"); scheme != "" {
+		return scheme
+	}
+	return "http"
+}
+
 // loggingMiddleware logs details about each incoming HTTP request.
 func loggingMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -305,13 +353,27 @@ func reverseProxyHandler(lb *LoadBalancer) http.HandlerFunc {
             return
         }
         proxy := httputil.NewSingleHostReverseProxy(url)
+        
+        // Modify the request to set proper headers like nginx
+        originalDirector := proxy.Director
+        proxy.Director = func(req *http.Request) {
+            originalDirector(req)
+            req.Host = url.Host
+            req.URL.Scheme = url.Scheme
+            req.URL.Host = url.Host
+            
+            // Set nginx-like headers
+            req.Header.Set("X-Real-IP", getClientIP(r))
+            req.Header.Set("X-Forwarded-For", getForwardedFor(r))
+            req.Header.Set("X-Forwarded-Proto", getScheme(r))
+            req.Header.Set("X-Forwarded-Host", r.Host)
+        }
+        
         proxy.ModifyResponse = func(resp *http.Response) error {
             resp.Header.Del("Content-Encoding")
             return nil
         }
-        r.Host = url.Host
-        r.URL.Host = url.Host
-        r.URL.Scheme = url.Scheme
+        
         log.Printf("Proxying request %s to %s", r.URL.Path, target)
         proxy.ServeHTTP(w, r)
     }
@@ -447,40 +509,64 @@ func main() {
 
 	r := mux.NewRouter()
 	rl := NewRateLimiter(rate.Limit(config.RateLimitRPS), config.RateLimitBurst)
-	lb := NewLoadBalancer(config.ProxyTargets)
 	cache := NewCache(time.Duration(config.CacheTTLSeconds) * time.Second)
 
-	// Proxy handler: Routes requests to backend servers via load balancing.
-	r.HandleFunc("/proxy", reverseProxyHandler(lb))
+	// Determine proxy targets: use proxy_backend if set, otherwise proxy_targets
+	var proxyTargets []string
+	if config.ProxyBackend != "" {
+		proxyTargets = []string{config.ProxyBackend}
+	} else if len(config.ProxyTargets) > 0 {
+		proxyTargets = config.ProxyTargets
+	}
 
-	// WebSocket handler: Provides a bidirectional communication channel.
-	r.HandleFunc("/ws", webSocketHandler)
-
-	// Rewritten URL handler: A destination for the /old to /new rewrite.
-	r.PathPrefix("/new/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "You've reached the rewritten URL: %s", r.URL.Path)
-	})
-
-	// Static files handler: Serve everything from root
-	r.PathPrefix("/").Handler(staticFileHandler(config.StaticDir, cache))
-
-	// Catch-all route: Serve index.html for non-file, non-API paths (SPA support)
-	r.NotFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		indexPath := filepath.Join(config.StaticDir, "index.html")
-		f, err := os.Open(indexPath)
-		if err != nil {
-			http.Error(w, "index.html not found", http.StatusInternalServerError)
-			return
+	// If proxy_mode is enabled and we have proxy targets, set up root-level reverse proxy
+	if config.ProxyMode && len(proxyTargets) > 0 {
+		lb := NewLoadBalancer(proxyTargets)
+		
+		// WebSocket handler: Provides a bidirectional communication channel.
+		r.HandleFunc("/ws", webSocketHandler)
+		
+		// Root-level reverse proxy - proxy all requests to backend
+		r.PathPrefix("/").Handler(reverseProxyHandler(lb))
+		
+		log.Printf("Proxy mode enabled: proxying all requests to %v", proxyTargets)
+	} else {
+		// Traditional mode: static files with optional /proxy endpoint
+		if len(proxyTargets) > 0 {
+			lb := NewLoadBalancer(proxyTargets)
+			// Proxy handler: Routes requests to backend servers via load balancing.
+			r.HandleFunc("/proxy", reverseProxyHandler(lb))
 		}
-		defer f.Close()
-		body, err := io.ReadAll(f)
-		if err != nil {
-			http.Error(w, "Error reading index.html", http.StatusInternalServerError)
-			return
-		}
-		w.Header().Set("Content-Type", "text/html; charset=utf-8")
-		w.Write(body)
-	})
+
+		// WebSocket handler: Provides a bidirectional communication channel.
+		r.HandleFunc("/ws", webSocketHandler)
+
+		// Rewritten URL handler: A destination for the /old to /new rewrite.
+		r.PathPrefix("/new/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			fmt.Fprintf(w, "You've reached the rewritten URL: %s", r.URL.Path)
+		})
+
+		// Static files handler: Serve everything from root
+		r.PathPrefix("/").Handler(staticFileHandler(config.StaticDir, cache))
+
+		// Catch-all route: Serve index.html for non-file, non-API paths (SPA support)
+		r.NotFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			indexPath := filepath.Join(config.StaticDir, "index.html")
+			f, err := os.Open(indexPath)
+			if err != nil {
+				http.Error(w, "index.html not found", http.StatusInternalServerError)
+				return
+			}
+			defer f.Close()
+			body, err := io.ReadAll(f)
+			if err != nil {
+				http.Error(w, "Error reading index.html", http.StatusInternalServerError)
+				return
+			}
+			w.Header().Set("Content-Type", "text/html; charset=utf-8")
+			w.Write(body)
+		})
+	}
 
 	//APPLY MIDDLEWARES
 	r.Use(loggingMiddleware)

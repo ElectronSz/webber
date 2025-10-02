@@ -2,3 +2,4 @@ tests
 key.pem
 cert.pem
 debian/
+webber-test
