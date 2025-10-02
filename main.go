@@ -30,6 +30,7 @@ type Config struct {
 	RateLimitRPS    float64  `json:"rate_limit_rps"`
 	RateLimitBurst  int      `json:"rate_limit_burst"`
 	CacheTTLSeconds int      `json:"cache_ttl_seconds"`
+	ProxyAll        bool     `json:"proxy_all"` // If true, proxy all requests to backend
 }
 
 // RateLimiter for per-client IP rate limiting
@@ -95,49 +96,49 @@ type Cache struct {
 
 // MimeTypeMap stores common MIME types by file extension.
 var MimeTypeMap = map[string]string{
-	".html": "text/html; charset=utf-8",
-	".css":  "text/css; charset=utf-8",
-	".js":   "application/javascript; charset=utf-8",
-	".json": "application/json; charset=utf-8",
-	".png":  "image/png",
-	".jpg":  "image/jpeg",
-	".jpeg": "image/jpeg",
-	".gif":  "image/gif",
-	".svg":  "image/svg+xml",
-	".ico":  "image/x-icon",
-	".woff": "font/woff",
-	".woff2": "font/woff2",
-	".ttf":  "font/ttf",
-	".eot":  "application/vnd.ms-fontobject",
-	".otf":  "font/otf",
-	".webp": "image/webp",
-	".mp3":  "audio/mpeg",
-	".wav":  "audio/wav",
-	".ogg":  "application/ogg", // For audio/video
-	".mp4":  "video/mp4",
-	".webm": "video/webm",
-	".pdf":  "application/pdf",
-	".xml":  "application/xml; charset=utf-8", // Consolidated XML
-	".txt":  "text/plain; charset=utf-8",    // Consolidated TXT
-	".csv":  "text/csv; charset=utf-8",
-	".zip":  "application/zip",
-	".tar":  "application/x-tar",
-	".gz":   "application/gzip",
-	".rar":  "application/x-rar-compressed",
-	".7z":   "application/x-7z-compressed",
-	".doc":  "application/msword",
-	".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-	".xls":  "application/vnd.ms-excel",
-	".xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-	".ppt":  "application/vnd.ms-powerpoint",
-	".pptx": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-	".md":   "text/markdown; charset=utf-8",
-	".xsl":  "application/xml; charset=utf-8",
-	".xsd":  "application/xml; charset=utf-8",
-	".yaml": "application/x-yaml; charset=utf-8",
-	".yml":  "application/x-yaml; charset=utf-8",
-	".toml": "application/toml; charset=utf-8",
-	".wasm": "application/wasm",
+	".html":        "text/html; charset=utf-8",
+	".css":         "text/css; charset=utf-8",
+	".js":          "application/javascript; charset=utf-8",
+	".json":        "application/json; charset=utf-8",
+	".png":         "image/png",
+	".jpg":         "image/jpeg",
+	".jpeg":        "image/jpeg",
+	".gif":         "image/gif",
+	".svg":         "image/svg+xml",
+	".ico":         "image/x-icon",
+	".woff":        "font/woff",
+	".woff2":       "font/woff2",
+	".ttf":         "font/ttf",
+	".eot":         "application/vnd.ms-fontobject",
+	".otf":         "font/otf",
+	".webp":        "image/webp",
+	".mp3":         "audio/mpeg",
+	".wav":         "audio/wav",
+	".ogg":         "application/ogg", // For audio/video
+	".mp4":         "video/mp4",
+	".webm":        "video/webm",
+	".pdf":         "application/pdf",
+	".xml":         "application/xml; charset=utf-8", // Consolidated XML
+	".txt":         "text/plain; charset=utf-8",      // Consolidated TXT
+	".csv":         "text/csv; charset=utf-8",
+	".zip":         "application/zip",
+	".tar":         "application/x-tar",
+	".gz":          "application/gzip",
+	".rar":         "application/x-rar-compressed",
+	".7z":          "application/x-7z-compressed",
+	".doc":         "application/msword",
+	".docx":        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+	".xls":         "application/vnd.ms-excel",
+	".xlsx":        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+	".ppt":         "application/vnd.ms-powerpoint",
+	".pptx":        "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+	".md":          "text/markdown; charset=utf-8",
+	".xsl":         "application/xml; charset=utf-8",
+	".xsd":         "application/xml; charset=utf-8",
+	".yaml":        "application/x-yaml; charset=utf-8",
+	".yml":         "application/x-yaml; charset=utf-8",
+	".toml":        "application/toml; charset=utf-8",
+	".wasm":        "application/wasm",
 	".webmanifest": "application/manifest+json",
 	".appcache":    "text/cache-manifest",
 	".atom":        "application/atom+xml",
@@ -156,14 +157,14 @@ var MimeTypeMap = map[string]string{
 	".glsl":        "text/plain; charset=utf-8", // Common for shader files
 	".vert":        "text/plain; charset=utf-8", // Common for vertex shaders
 	".frag":        "text/plain; charset=utf-8", // Common for fragment shaders
-	".obj":         "application/octet-stream", // 3D model data
+	".obj":         "application/octet-stream",  // 3D model data
 	".mtl":         "text/plain; charset=utf-8", // Material for 3D models
-	".fbx":         "application/octet-stream", // Autodesk FBX
+	".fbx":         "application/octet-stream",  // Autodesk FBX
 	".gltf":        "model/gltf+json",
 	".glb":         "model/gltf-binary",
 	".bin":         "application/octet-stream", // Binary data, often with glTF
 	".stl":         "application/vnd.ms-pki.stl",
-	".dae":         "application/xml", // Collada
+	".dae":         "application/xml",          // Collada
 	".blend":       "application/octet-stream", // Blender file
 	".exr":         "image/x-exr",
 	".hdr":         "image/vnd.radiance",
@@ -205,9 +206,9 @@ func (c *Cache) Set(key string, body []byte, headers http.Header, mimeType strin
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	c.store[key] = &CacheEntry{
-		Body:    body,
-		Expires: time.Now().Add(c.ttl),
-		Headers: headers,
+		Body:     body,
+		Expires:  time.Now().Add(c.ttl),
+		Headers:  headers,
 		MimeType: mimeType,
 	}
 }
@@ -258,26 +259,26 @@ func rateLimitMiddleware(rl *RateLimiter) mux.MiddlewareFunc {
 
 // gzipMiddleware compresses responses if the client supports gzip encoding.
 func gzipMiddleware(next http.Handler) http.Handler {
-    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-        if strings.Contains(r.Header.Get("Connection"), "Upgrade") && strings.Contains(r.Header.Get("Upgrade"), "websocket") {
-            next.ServeHTTP(w, r)
-            return
-        }
-        if !strings.Contains(r.Header.Get("Accept-Encoding"), "gzip") {
-            next.ServeHTTP(w, r)
-            return
-        }
-        w.Header().Set("Content-Encoding", "gzip")
-        gz, err := gzip.NewWriterLevel(w, gzip.BestSpeed)
-        if err != nil {
-            log.Printf("Failed to create gzip writer: %v", err)
-            http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-            return
-        }
-        defer gz.Close()
-        gzw := GzipResponseWriter{Writer: gz, ResponseWriter: w}
-        next.ServeHTTP(gzw, r)
-    })
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if strings.Contains(r.Header.Get("Connection"), "Upgrade") && strings.Contains(r.Header.Get("Upgrade"), "websocket") {
+			next.ServeHTTP(w, r)
+			return
+		}
+		if !strings.Contains(r.Header.Get("Accept-Encoding"), "gzip") {
+			next.ServeHTTP(w, r)
+			return
+		}
+		w.Header().Set("Content-Encoding", "gzip")
+		gz, err := gzip.NewWriterLevel(w, gzip.BestSpeed)
+		if err != nil {
+			log.Printf("Failed to create gzip writer: %v", err)
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
+		defer gz.Close()
+		gzw := GzipResponseWriter{Writer: gz, ResponseWriter: w}
+		next.ServeHTTP(gzw, r)
+	})
 }
 
 // rewriteMiddleware demonstrates URL rewriting/redirection.
@@ -296,25 +297,37 @@ func rewriteMiddleware(next http.Handler) http.Handler {
 
 // reverseProxyHandler proxies requests to a backend server selected by the LoadBalancer.
 func reverseProxyHandler(lb *LoadBalancer) http.HandlerFunc {
-    return func(w http.ResponseWriter, r *http.Request) {
-        target := lb.NextServer()
-        url, err := url.Parse(target)
-        if err != nil {
-            log.Printf("Error parsing proxy target URL %s: %v", target, err)
-            http.Error(w, "Bad gateway", http.StatusBadGateway)
-            return
-        }
-        proxy := httputil.NewSingleHostReverseProxy(url)
-        proxy.ModifyResponse = func(resp *http.Response) error {
-            resp.Header.Del("Content-Encoding")
-            return nil
-        }
-        r.Host = url.Host
-        r.URL.Host = url.Host
-        r.URL.Scheme = url.Scheme
-        log.Printf("Proxying request %s to %s", r.URL.Path, target)
-        proxy.ServeHTTP(w, r)
-    }
+	return func(w http.ResponseWriter, r *http.Request) {
+		target := lb.NextServer()
+		url, err := url.Parse(target)
+		if err != nil {
+			log.Printf("Error parsing proxy target URL %s: %v", target, err)
+			http.Error(w, "Bad gateway", http.StatusBadGateway)
+			return
+		}
+		proxy := httputil.NewSingleHostReverseProxy(url)
+		// Set headers like nginx
+		originalDirector := proxy.Director
+		proxy.Director = func(req *http.Request) {
+			originalDirector(req)
+			req.Header.Set("Host", req.Host)
+			req.Header.Set("X-Real-IP", req.RemoteAddr)
+			// Append to X-Forwarded-For if already present
+			prior := req.Header.Get("X-Forwarded-For")
+			if prior != "" {
+				req.Header.Set("X-Forwarded-For", prior+", "+req.RemoteAddr)
+			} else {
+				req.Header.Set("X-Forwarded-For", req.RemoteAddr)
+			}
+			req.Header.Set("X-Forwarded-Proto", "https") // since server is TLS
+		}
+		proxy.ModifyResponse = func(resp *http.Response) error {
+			resp.Header.Del("Content-Encoding")
+			return nil
+		}
+		log.Printf("Proxying request %s to %s", r.URL.Path, target)
+		proxy.ServeHTTP(w, r)
+	}
 }
 
 // webSocketHandler handles WebSocket connections, echoing messages back.
@@ -344,74 +357,74 @@ func webSocketHandler(w http.ResponseWriter, r *http.Request) {
 
 // staticFileHandler serves static files from a directory with in-memory caching.
 func staticFileHandler(staticDir string, cache *Cache) http.Handler {
-    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-        requestedPath := filepath.Clean(r.URL.Path)
-        if strings.Contains(requestedPath, "..") {
-            http.Error(w, "Forbidden", http.StatusForbidden)
-            log.Printf("Forbidden: Directory traversal attempt for path: %s", r.URL.Path)
-            return
-        }
-        fullPath := filepath.Join(staticDir, requestedPath)
-        fi, err := os.Stat(fullPath)
-        if err == nil && fi.IsDir() {
-            fullPath = filepath.Join(fullPath, "index.html")
-            requestedPath = filepath.Join(requestedPath, "index.html")
-            log.Printf("Serving index.html for directory request: %s -> %s", r.URL.Path, fullPath)
-        }
-        cacheKey := requestedPath
-        if entry, found := cache.Get(cacheKey); found {
-            for k, v := range entry.Headers {
-                if k != "Content-Encoding" {
-                    for _, val := range v {
-                        w.Header().Add(k, val)
-                    }
-                }
-            }
-            w.Header().Set("Content-Type", entry.MimeType)
-            w.Write(entry.Body)
-            log.Printf("Served %s from cache", requestedPath)
-            return
-        }
-        f, err := os.Open(fullPath)
-        if err != nil {
-            if os.IsNotExist(err) {
-                http.Error(w, "File not found", http.StatusNotFound)
-                log.Printf("File not found: %s", fullPath)
-            } else {
-                http.Error(w, "Error opening file", http.StatusInternalServerError)
-                log.Printf("Error opening file %s: %v", fullPath, err)
-            }
-            return
-        }
-        defer f.Close()
-        body, err := io.ReadAll(f)
-        if err != nil {
-            http.Error(w, "Error reading file", http.StatusInternalServerError)
-            log.Printf("Error reading file %s: %v", fullPath, err)
-            return
-        }
-        // mimeType := http.DetectContentType(body)
-        // ext := strings.ToLower(filepath.Ext(fullPath))
-        // switch ext {
-        // case ".css":
-        //     mimeType = "text/css"
-        // case ".js":
-        //     mimeType = "application/javascript"
-        // case ".json":
-        //     mimeType = "application/json"
-        // case ".svg":
-        //     mimeType = "image/svg+xml"
-        // case ".woff":
-        //     mimeType = "font/woff"
-        // case ".woff2":
-        //     mimeType = "font/woff2"
-        // case ".ttf":
-        //     mimeType = "font/ttf"
-        // case ".eot":
-        //     mimeType = "application/vnd.ms-fontobject"
-        // case ".ico":
-        //     mimeType = "image/x-icon"
-        // }
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		requestedPath := filepath.Clean(r.URL.Path)
+		if strings.Contains(requestedPath, "..") {
+			http.Error(w, "Forbidden", http.StatusForbidden)
+			log.Printf("Forbidden: Directory traversal attempt for path: %s", r.URL.Path)
+			return
+		}
+		fullPath := filepath.Join(staticDir, requestedPath)
+		fi, err := os.Stat(fullPath)
+		if err == nil && fi.IsDir() {
+			fullPath = filepath.Join(fullPath, "index.html")
+			requestedPath = filepath.Join(requestedPath, "index.html")
+			log.Printf("Serving index.html for directory request: %s -> %s", r.URL.Path, fullPath)
+		}
+		cacheKey := requestedPath
+		if entry, found := cache.Get(cacheKey); found {
+			for k, v := range entry.Headers {
+				if k != "Content-Encoding" {
+					for _, val := range v {
+						w.Header().Add(k, val)
+					}
+				}
+			}
+			w.Header().Set("Content-Type", entry.MimeType)
+			w.Write(entry.Body)
+			log.Printf("Served %s from cache", requestedPath)
+			return
+		}
+		f, err := os.Open(fullPath)
+		if err != nil {
+			if os.IsNotExist(err) {
+				http.Error(w, "File not found", http.StatusNotFound)
+				log.Printf("File not found: %s", fullPath)
+			} else {
+				http.Error(w, "Error opening file", http.StatusInternalServerError)
+				log.Printf("Error opening file %s: %v", fullPath, err)
+			}
+			return
+		}
+		defer f.Close()
+		body, err := io.ReadAll(f)
+		if err != nil {
+			http.Error(w, "Error reading file", http.StatusInternalServerError)
+			log.Printf("Error reading file %s: %v", fullPath, err)
+			return
+		}
+		// mimeType := http.DetectContentType(body)
+		// ext := strings.ToLower(filepath.Ext(fullPath))
+		// switch ext {
+		// case ".css":
+		//     mimeType = "text/css"
+		// case ".js":
+		//     mimeType = "application/javascript"
+		// case ".json":
+		//     mimeType = "application/json"
+		// case ".svg":
+		//     mimeType = "image/svg+xml"
+		// case ".woff":
+		//     mimeType = "font/woff"
+		// case ".woff2":
+		//     mimeType = "font/woff2"
+		// case ".ttf":
+		//     mimeType = "font/ttf"
+		// case ".eot":
+		//     mimeType = "application/vnd.ms-fontobject"
+		// case ".ico":
+		//     mimeType = "image/x-icon"
+		// }
 
 		// Determine MIME type using the MimeTypeMap first, then fallback to DetectContentType
 		mimeType := ""
@@ -421,17 +434,17 @@ func staticFileHandler(staticDir string, cache *Cache) http.Handler {
 		} else {
 			mimeType = http.DetectContentType(body)
 		}
-        w.Header().Set("Content-Type", mimeType)
-        w.Write(body)
-        headersToCache := make(http.Header)
-        for k, v := range w.Header() {
-            if k != "Content-Encoding" {
-                headersToCache[k] = v
-            }
-        }
-        cache.Set(cacheKey, body, headersToCache, mimeType)
-        log.Printf("Served %s and cached for future requests", requestedPath)
-    })
+		w.Header().Set("Content-Type", mimeType)
+		w.Write(body)
+		headersToCache := make(http.Header)
+		for k, v := range w.Header() {
+			if k != "Content-Encoding" {
+				headersToCache[k] = v
+			}
+		}
+		cache.Set(cacheKey, body, headersToCache, mimeType)
+		log.Printf("Served %s and cached for future requests", requestedPath)
+	})
 }
 
 func main() {
@@ -450,9 +463,6 @@ func main() {
 	lb := NewLoadBalancer(config.ProxyTargets)
 	cache := NewCache(time.Duration(config.CacheTTLSeconds) * time.Second)
 
-	// Proxy handler: Routes requests to backend servers via load balancing.
-	r.HandleFunc("/proxy", reverseProxyHandler(lb))
-
 	// WebSocket handler: Provides a bidirectional communication channel.
 	r.HandleFunc("/ws", webSocketHandler)
 
@@ -461,26 +471,32 @@ func main() {
 		fmt.Fprintf(w, "You've reached the rewritten URL: %s", r.URL.Path)
 	})
 
-	// Static files handler: Serve everything from root
-	r.PathPrefix("/").Handler(staticFileHandler(config.StaticDir, cache))
+	if config.ProxyAll {
+		// Proxy all requests to backend (like nginx or Caddy)
+		r.PathPrefix("/").Handler(reverseProxyHandler(lb))
+		log.Println("ProxyAll enabled: All requests will be proxied to backend(s)")
+	} else {
+		// Static files handler: Serve everything from root
+		r.PathPrefix("/").Handler(staticFileHandler(config.StaticDir, cache))
 
-	// Catch-all route: Serve index.html for non-file, non-API paths (SPA support)
-	r.NotFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		indexPath := filepath.Join(config.StaticDir, "index.html")
-		f, err := os.Open(indexPath)
-		if err != nil {
-			http.Error(w, "index.html not found", http.StatusInternalServerError)
-			return
-		}
-		defer f.Close()
-		body, err := io.ReadAll(f)
-		if err != nil {
-			http.Error(w, "Error reading index.html", http.StatusInternalServerError)
-			return
-		}
-		w.Header().Set("Content-Type", "text/html; charset=utf-8")
-		w.Write(body)
-	})
+		// Catch-all route: Serve index.html for non-file, non-API paths (SPA support)
+		r.NotFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			indexPath := filepath.Join(config.StaticDir, "index.html")
+			f, err := os.Open(indexPath)
+			if err != nil {
+				http.Error(w, "index.html not found", http.StatusInternalServerError)
+				return
+			}
+			defer f.Close()
+			body, err := io.ReadAll(f)
+			if err != nil {
+				http.Error(w, "Error reading index.html", http.StatusInternalServerError)
+				return
+			}
+			w.Header().Set("Content-Type", "text/html; charset=utf-8")
+			w.Write(body)
+		})
+	}
 
 	//APPLY MIDDLEWARES
 	r.Use(loggingMiddleware)

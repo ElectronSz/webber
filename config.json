@@ -4,5 +4,6 @@
   "proxy_targets": ["http://localhost:8081", "http://localhost:8082"],
   "rate_limit_rps": 10.0,
   "rate_limit_burst": 20,
-  "cache_ttl_seconds": 300
+  "cache_ttl_seconds": 300,
+  "proxy_all": true
 }
