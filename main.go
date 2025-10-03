@@ -27,6 +27,8 @@ type Config struct {
 	Port            string   `json:"port"`
 	StaticDir       string   `json:"static_dir"`
 	ProxyTargets    []string `json:"proxy_targets"`
+	ProxyMode       bool     `json:"proxy_mode"`        // Enable root-level reverse proxy mode
+	ProxyBackend    string   `json:"proxy_backend"`     // Single backend for simple reverse proxy (e.g., "http://localhost:3000")
 	RateLimitRPS    float64  `json:"rate_limit_rps"`
 	RateLimitBurst  int      `json:"rate_limit_burst"`
 	CacheTTLSeconds int      `json:"cache_ttl_seconds"`
@@ -229,6 +231,52 @@ var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
 	CheckOrigin:     func(r *http.Request) bool { return true },
+}
+
+// getClientIP extracts the real client IP address from the request
+func getClientIP(r *http.Request) string {
+	// Check X-Real-IP header first
+	if ip := r.Header.Get("X-Real-IP"); ip != "" {
+		return ip
+	}
+	// Check X-Forwarded-For header
+	if forwarded := r.Header.Get("X-Forwarded-For"); forwarded != "" {
+		// X-Forwarded-For can contain multiple IPs, take the first one
+		if idx := strings.Index(forwarded, ","); idx != -1 {
+			return strings.TrimSpace(forwarded[:idx])
+		}
+		return strings.TrimSpace(forwarded)
+	}
+	// Fall back to RemoteAddr
+	ip := r.RemoteAddr
+	if idx := strings.LastIndex(ip, ":"); idx != -1 {
+		ip = ip[:idx]
+	}
+	return ip
+}
+
+// getForwardedFor constructs the X-Forwarded-For header value
+func getForwardedFor(r *http.Request) string {
+	clientIP := r.RemoteAddr
+	if idx := strings.LastIndex(clientIP, ":"); idx != -1 {
+		clientIP = clientIP[:idx]
+	}
+	
+	if forwarded := r.Header.Get("X-Forwarded-For"); forwarded != "" {
+		return forwarded + ", " + clientIP
+	}
+	return clientIP
+}
+
+// getScheme determines the request scheme (http or https)
+func getScheme(r *http.Request) string {
+	if r.TLS != nil {
+		return "https"
+	}
+	if scheme := r.Header.Get("X-Forwarded-Proto"); scheme != "" {
+		return scheme
+	}
+	return "http"
 }
 
 // loggingMiddleware logs details about each incoming HTTP request.
@@ -460,16 +508,13 @@ func main() {
 
 	r := mux.NewRouter()
 	rl := NewRateLimiter(rate.Limit(config.RateLimitRPS), config.RateLimitBurst)
-	lb := NewLoadBalancer(config.ProxyTargets)
 	cache := NewCache(time.Duration(config.CacheTTLSeconds) * time.Second)
 
 	// WebSocket handler: Provides a bidirectional communication channel.
 	r.HandleFunc("/ws", webSocketHandler)
 
-	// Rewritten URL handler: A destination for the /old to /new rewrite.
-	r.PathPrefix("/new/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "You've reached the rewritten URL: %s", r.URL.Path)
-	})
+		// WebSocket handler: Provides a bidirectional communication channel.
+		r.HandleFunc("/ws", webSocketHandler)
 
 	if config.ProxyAll {
 		// Proxy all requests to backend (like nginx or Caddy)

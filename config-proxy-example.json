@@ -1,0 +1,10 @@
+{
+  "port": "443",
+  "static_dir": "./static",
+  "proxy_targets": [],
+  "proxy_mode": true,
+  "proxy_backend": "http://localhost:3000",
+  "rate_limit_rps": 10.0,
+  "rate_limit_burst": 20,
+  "cache_ttl_seconds": 300
+}
