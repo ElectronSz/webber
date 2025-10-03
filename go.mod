@@ -1,8 +1,6 @@
 module github.com/ElectronSz/tornado
 
-go 1.23.0
-
-toolchain go1.24.7
+go 1.23
 
 require (
 	github.com/gorilla/mux v1.8.1
@@ -12,3 +10,4 @@ require (
 )
 
 require golang.org/x/text v0.27.0 // indirect
+.
