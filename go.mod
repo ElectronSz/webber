@@ -1,6 +1,8 @@
 module github.com/ElectronSz/tornado
 
-go 1.23
+go 1.23.0
+
+toolchain go1.24.7
 
 require (
 	github.com/gorilla/mux v1.8.1
